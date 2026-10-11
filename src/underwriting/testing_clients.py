@@ -14,6 +14,7 @@ class ScriptedClient:
             for agent, payloads in responses.items()
         }
         self.calls: list[str] = []
+        self.prompts: list[tuple[str, str]] = []
 
     def complete(
         self,
@@ -24,8 +25,9 @@ class ScriptedClient:
         schema: type[BaseModel],
         max_tokens: int,
     ) -> LLMResponse:
-        del system, user, schema, max_tokens
+        del system, schema, max_tokens
         self.calls.append(agent)
+        self.prompts.append((agent, user))
         queue = self._responses[agent]
         if not queue:
             raise AssertionError(f"no scripted response left for {agent}")
