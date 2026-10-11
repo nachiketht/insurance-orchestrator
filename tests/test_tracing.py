@@ -39,6 +39,12 @@ ENRICHMENT = {
     "notes": "Clean file.",
 }
 
+RISK = {
+    "factors": [{"name": "prior_claims", "points": 15, "detail": "scripted"}],
+    "score": 99,
+    "rationale": "Scripted.",
+}
+
 REQUIRED = (
     "step",
     "agent",
@@ -53,12 +59,16 @@ REQUIRED = (
 
 
 def test_trace_records_both_steps_and_the_handoff() -> None:
-    llm = ScriptedClient({"intake": INTAKE, "enrichment": ENRICHMENT})
+    llm = ScriptedClient({"intake": INTAKE, "enrichment": ENRICHMENT, "risk_scoring": RISK})
     tracer = Tracer()
     case = run_case(RAW, llm=llm, tracer=tracer)
     payload = tracer.dump(case.case_id, case.model_dump(mode="json"))
 
-    assert [span["agent"] for span in payload["spans"]] == ["intake", "enrichment"]
+    assert [span["agent"] for span in payload["spans"]] == [
+        "intake",
+        "enrichment",
+        "risk_scoring",
+    ]
     for span in payload["spans"]:
         for field in REQUIRED:
             assert field in span
@@ -71,6 +81,10 @@ def test_trace_records_both_steps_and_the_handoff() -> None:
     assert enrichment["input_source"] == ["case.intake", "bureau"]
     assert enrichment["input"]["intake"]["product"] == "auto"
     assert enrichment["input"]["intake"]["coverage_amount"] == 250000
+    risk = payload["spans"][2]
+    assert risk["input_source"] == ["case.intake", "case.enrichment"]
+    assert risk["input"]["enrichment"]["credit_band"] == "a"
+    assert risk["output"]["score"] == 15
     path = Path("traces") / "handoff-test.json"
     path.parent.mkdir(exist_ok=True)
     path.write_text(json.dumps(payload))
@@ -87,7 +101,11 @@ def test_trace_records_both_steps_and_the_handoff() -> None:
 
 def test_repair_call_is_a_second_entry_on_the_same_step() -> None:
     llm = ScriptedClient(
-        {"intake": [dict(INTAKE, coverage_amount="250k"), INTAKE], "enrichment": ENRICHMENT}
+        {
+            "intake": [dict(INTAKE, coverage_amount="250k"), INTAKE],
+            "enrichment": ENRICHMENT,
+            "risk_scoring": RISK,
+        }
     )
     tracer = Tracer()
     run_case(RAW, llm=llm, tracer=tracer)

@@ -33,4 +33,6 @@ def test_live_intake_hands_off_to_enrichment() -> None:
     assert case.intake is not None and case.intake.product == "auto"
     assert case.enrichment is not None
     assert case.enrichment.credit_band == "a"
-    assert case.risk is None
+    assert case.risk is not None
+    assert case.risk.score == sum(factor.points for factor in case.risk.factors)
+    assert case.recommendation is None

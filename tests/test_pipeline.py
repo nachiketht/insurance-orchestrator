@@ -35,16 +35,24 @@ ENRICHMENT = {
     "notes": "Clean file.",
 }
 
+RISK = {
+    "factors": [
+        {"name": "prior_claims", "points": 15, "detail": "scripted"},
+        {"name": "not_a_factor", "points": 40, "detail": "drop"},
+    ],
+    "score": 99,
+    "rationale": "Scripted.",
+}
 
-def test_intake_output_is_what_enrichment_receives() -> None:
-    llm = ScriptedClient({"intake": INTAKE, "enrichment": ENRICHMENT})
+
+def test_each_step_receives_the_previous_output() -> None:
+    llm = ScriptedClient({"intake": INTAKE, "enrichment": ENRICHMENT, "risk_scoring": RISK})
     case = run_case(RAW, llm=llm)
 
-    assert llm.calls == ["intake", "enrichment"]
+    assert llm.calls == ["intake", "enrichment", "risk_scoring"]
     assert case.intake is not None
     assert case.intake.product == "auto"
     assert case.intake.applicant_id == "A-100"
-    assert case.risk is None
     assert case.recommendation is None
 
     sent = json.loads(llm.prompts[1][1])
@@ -55,3 +63,10 @@ def test_intake_output_is_what_enrichment_receives() -> None:
     assert case.enrichment is not None
     assert case.enrichment.credit_band == "a"
     assert case.enrichment.prior_claims_count == 0
+
+    scored = json.loads(llm.prompts[2][1])
+    assert scored["intake"]["product"] == "auto"
+    assert scored["enrichment"]["credit_band"] == "a"
+    assert scored["enrichment"]["prior_claims_count"] == 0
+    assert case.risk is not None
+    assert case.risk.score == 15

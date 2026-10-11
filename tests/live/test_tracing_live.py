@@ -38,10 +38,16 @@ def test_live_trace_has_tokens_for_both_steps(tmp_path: Path) -> None:
     payload = tracer.dump(case.case_id, case.model_dump(mode="json"))
     path = tmp_path / "trace.json"
     path.write_text(json.dumps(payload))
-    assert [span["agent"] for span in payload["spans"]] == ["intake", "enrichment"]
+    assert [span["agent"] for span in payload["spans"]] == [
+        "intake",
+        "enrichment",
+        "risk_scoring",
+    ]
     for span in payload["spans"]:
         assert span["tokens_used"] > 0
         assert span["duration_ms"] > 0
         assert span["cost_usd"] == 0.0
         assert span["output"]
     assert payload["spans"][1]["input"]["intake"]["product"] == "auto"
+    assert payload["spans"][2]["input"]["enrichment"]["credit_band"] == "a"
+    assert payload["spans"][2]["output"]["score"] == case.risk.score

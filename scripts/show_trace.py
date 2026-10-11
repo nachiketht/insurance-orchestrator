@@ -45,6 +45,11 @@ def _brief(value: dict | None) -> str:
         parts.append(f"intake.product={value['intake'].get('product')}")
     if "bureau" in value:
         parts.append(f"bureau.credit_band={value['bureau'].get('credit_band')}")
+    if "enrichment" in value:
+        band = value["enrichment"].get("credit_band")
+        claims = value["enrichment"].get("prior_claims_count")
+        parts.append(f"enrichment.credit_band={band}")
+        parts.append(f"enrichment.prior_claims_count={claims}")
     return ", ".join(parts) if parts else ", ".join(list(value)[:4])
 
 
