@@ -1,11 +1,11 @@
 {
-  "case_id": "a85ff9e0e9754a159d40ac55e767c303",
+  "case_id": "c888f71a3c294df1afa5d8c18159d0db",
   "cost_usd": 0.0,
   "spans": [
     {
       "step": 1,
       "agent": "intake",
-      "timestamp": "2026-10-11T20:29:21.643873+00:00",
+      "timestamp": "2026-10-11T21:00:16.487322+00:00",
       "input": {
         "applicant_id": "A-200",
         "applicant_name": "Grace Hopper",
@@ -30,11 +30,14 @@
         "claims_history_text": "three water claims in two years",
         "missing_fields": []
       },
-      "duration_ms": 4309.7,
+      "duration_ms": 4131.1,
       "tokens_used": 274,
       "cost_usd": 0.0,
       "status": "ok",
       "error": null,
+      "attempt": 1,
+      "will_retry": false,
+      "backoff_ms": 0.0,
       "model_calls": [
         {
           "input_tokens": 175,
@@ -46,7 +49,7 @@
     {
       "step": 2,
       "agent": "enrichment",
-      "timestamp": "2026-10-11T20:29:25.953636+00:00",
+      "timestamp": "2026-10-11T21:00:20.618490+00:00",
       "input": {
         "intake": {
           "applicant_id": "A-200",
@@ -79,11 +82,14 @@
         ],
         "notes": "Flags: weak_credit, high_claims_frequency"
       },
-      "duration_ms": 2116.6,
+      "duration_ms": 2080.0,
       "tokens_used": 299,
       "cost_usd": 0.0,
       "status": "ok",
       "error": null,
+      "attempt": 1,
+      "will_retry": false,
+      "backoff_ms": 0.0,
       "model_calls": [
         {
           "input_tokens": 255,
@@ -95,7 +101,7 @@
     {
       "step": 3,
       "agent": "risk_scoring",
-      "timestamp": "2026-10-11T20:29:28.070333+00:00",
+      "timestamp": "2026-10-11T21:00:22.698552+00:00",
       "input": {
         "intake": {
           "applicant_id": "A-200",
@@ -149,11 +155,14 @@
         "score": 90,
         "rationale": "The application has a high number of prior claims, a poor credit band, high coverage relative to income, and an old asset age, all of which contribute to a higher risk score."
       },
-      "duration_ms": 9816.5,
+      "duration_ms": 9567.4,
       "tokens_used": 606,
       "cost_usd": 0.0,
       "status": "ok",
       "error": null,
+      "attempt": 1,
+      "will_retry": false,
+      "backoff_ms": 0.0,
       "model_calls": [
         {
           "input_tokens": 378,
@@ -165,7 +174,7 @@
     {
       "step": 4,
       "agent": "recommendation",
-      "timestamp": "2026-10-11T20:29:37.886654+00:00",
+      "timestamp": "2026-10-11T21:00:32.266089+00:00",
       "input": {
         "intake": {
           "applicant_id": "A-200",
@@ -228,11 +237,14 @@
         "conditions": [],
         "source": "agent"
       },
-      "duration_ms": 2826.3,
+      "duration_ms": 3044.1,
       "tokens_used": 522,
       "cost_usd": 0.0,
       "status": "ok",
       "error": null,
+      "attempt": 1,
+      "will_retry": false,
+      "backoff_ms": 0.0,
       "model_calls": [
         {
           "input_tokens": 467,
@@ -243,7 +255,7 @@
     }
   ],
   "final_case": {
-    "case_id": "a85ff9e0e9754a159d40ac55e767c303",
+    "case_id": "c888f71a3c294df1afa5d8c18159d0db",
     "raw": {
       "applicant_id": "A-200",
       "applicant_name": "Grace Hopper",
@@ -313,6 +325,6 @@
     "escalation": null
   },
   "fixture": "high_risk_home",
-  "total_ms": 19069.1,
+  "total_ms": 18822.6,
   "tokens_used": 1701
 }

@@ -20,21 +20,21 @@ input count.
 
 | Case | Seconds | Input tokens | Output tokens | Local API cost | Hosted equivalent |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| clean_auto | 16.98 | 1229 | 393 | $0.00 | $0.000319 |
-| high_risk_home | 19.07 | 1275 | 426 | $0.00 | $0.000340 |
-| no_hit_life | 14.95 | 1192 | 325 | $0.00 | $0.000282 |
-| Mean | 17.00 | | | $0.00 | $0.000314 |
-| Max | 19.07 | | | | |
+| clean_auto | 17.97 | 1229 | 393 | $0.00 | $0.000319 |
+| high_risk_home | 18.82 | 1275 | 426 | $0.00 | $0.000340 |
+| no_hit_life | 14.75 | 1192 | 325 | $0.00 | $0.000282 |
+| Mean | 17.18 | | | $0.00 | $0.000314 |
+| Max | 18.82 | | | | |
 
 ## Per step, mean of the three cases
 
 | Step | Mean seconds | Budget seconds | Mean tokens | Token budget |
 | --- | ---: | ---: | ---: | ---: |
-| intake | 4.19 | 8 | 271 | 850 |
-| enrichment | 1.87 | 7 | 293 | 720 |
-| risk_scoring | 8.59 | 12 | 570 | 1050 |
-| recommendation | 2.35 | 10 | 480 | 1100 |
-| whole case | 17.00 | 37 | | 3,720 |
+| intake | 4.16 | 8 | 271 | 850 |
+| enrichment | 1.90 | 7 | 293 | 720 |
+| risk_scoring | 8.47 | 12 | 570 | 1050 |
+| recommendation | 2.65 | 10 | 480 | 1100 |
+| whole case | 17.18 | 37 | | 3,720 |
 
 Every step is inside the budget written in `docs/design.md` before these
 runs. Risk scoring is the slow step. It is about half of each case.
@@ -50,14 +50,14 @@ Total = $0.0003194
 
 ## Verdict
 
-Mean 17.00 seconds per case is 8.5 times the
+Mean 17.18 seconds per case is 8.6 times the
 2 second real-time budget. Real time fails. The four calls
 run one after another, and the next agent needs the previous agent's full
 JSON, so streaming the reply would not shorten the wait.
 
-At 17.00 seconds each, 10,000 cases take 47.2 hours
+At 17.18 seconds each, 10,000 cases take 47.7 hours
 on this one machine. The overnight window is 8 hours,
-so that batch fails too. This machine can finish about 1,694 cases in
+so that batch fails too. This machine can finish about 1,676 cases in
 8 hours. Batch is still the right way to run the pipeline, because no
 applicant is waiting on their own case. More machines, a smaller model,
 or combining intake and enrichment into one call would raise that number.

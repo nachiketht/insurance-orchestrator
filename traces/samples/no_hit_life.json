@@ -1,11 +1,11 @@
 {
-  "case_id": "33affca447904b4aa849698409ebe27a",
+  "case_id": "777d37466a6c401a834aa076b2352b6c",
   "cost_usd": 0.0,
   "spans": [
     {
       "step": 1,
       "agent": "intake",
-      "timestamp": "2026-10-11T20:29:40.714511+00:00",
+      "timestamp": "2026-10-11T21:00:35.312613+00:00",
       "input": {
         "applicant_id": "A-999",
         "applicant_name": "Alan Turing",
@@ -30,11 +30,14 @@
         "claims_history_text": "none",
         "missing_fields": []
       },
-      "duration_ms": 4111.9,
+      "duration_ms": 4109.1,
       "tokens_used": 268,
       "cost_usd": 0.0,
       "status": "ok",
       "error": null,
+      "attempt": 1,
+      "will_retry": false,
+      "backoff_ms": 0.0,
       "model_calls": [
         {
           "input_tokens": 172,
@@ -46,7 +49,7 @@
     {
       "step": 2,
       "agent": "enrichment",
-      "timestamp": "2026-10-11T20:29:44.826542+00:00",
+      "timestamp": "2026-10-11T21:00:39.421786+00:00",
       "input": {
         "intake": {
           "applicant_id": "A-999",
@@ -78,11 +81,14 @@
         ],
         "notes": "no_bureau_record flag applied due to credit_band being 'no_hit'"
       },
-      "duration_ms": 2082.3,
+      "duration_ms": 2041.6,
       "tokens_used": 297,
       "cost_usd": 0.0,
       "status": "ok",
       "error": null,
+      "attempt": 1,
+      "will_retry": false,
+      "backoff_ms": 0.0,
       "model_calls": [
         {
           "input_tokens": 251,
@@ -94,7 +100,7 @@
     {
       "step": 3,
       "agent": "risk_scoring",
-      "timestamp": "2026-10-11T20:29:46.908870+00:00",
+      "timestamp": "2026-10-11T21:00:41.463503+00:00",
       "input": {
         "intake": {
           "applicant_id": "A-999",
@@ -137,11 +143,14 @@
         "score": 20,
         "rationale": "The credit band is 'no_hit', which results in 0 points for the credit factor. However, the missing_data factor is triggered because the credit_band is 'no_hit', adding 20 points. The other factors do not apply due to the data provided."
       },
-      "duration_ms": 6260.5,
+      "duration_ms": 6142.8,
       "tokens_used": 518,
       "cost_usd": 0.0,
       "status": "ok",
       "error": null,
+      "attempt": 1,
+      "will_retry": false,
+      "backoff_ms": 0.0,
       "model_calls": [
         {
           "input_tokens": 376,
@@ -153,7 +162,7 @@
     {
       "step": 4,
       "agent": "recommendation",
-      "timestamp": "2026-10-11T20:29:53.169437+00:00",
+      "timestamp": "2026-10-11T21:00:47.606314+00:00",
       "input": {
         "intake": {
           "applicant_id": "A-999",
@@ -205,11 +214,14 @@
         "conditions": [],
         "source": "agent"
       },
-      "duration_ms": 2494.0,
+      "duration_ms": 2457.3,
       "tokens_used": 434,
       "cost_usd": 0.0,
       "status": "ok",
       "error": null,
+      "attempt": 1,
+      "will_retry": false,
+      "backoff_ms": 0.0,
       "model_calls": [
         {
           "input_tokens": 393,
@@ -220,7 +232,7 @@
     }
   ],
   "final_case": {
-    "case_id": "33affca447904b4aa849698409ebe27a",
+    "case_id": "777d37466a6c401a834aa076b2352b6c",
     "raw": {
       "applicant_id": "A-999",
       "applicant_name": "Alan Turing",
@@ -279,6 +291,6 @@
     "escalation": null
   },
   "fixture": "no_hit_life",
-  "total_ms": 14948.7,
+  "total_ms": 14750.8,
   "tokens_used": 1517
 }
