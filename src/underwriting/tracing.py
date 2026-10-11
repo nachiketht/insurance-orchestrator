@@ -25,6 +25,9 @@ class Span:
     cost_usd: float = 0.0
     status: str = "ok"
     error: str | None = None
+    attempt: int = 1
+    will_retry: bool = False
+    backoff_ms: float = 0.0
     calls: list[dict] = field(default_factory=list)
 
     def as_dict(self) -> dict:
@@ -40,6 +43,9 @@ class Span:
             "cost_usd": self.cost_usd,
             "status": self.status,
             "error": self.error,
+            "attempt": self.attempt,
+            "will_retry": self.will_retry,
+            "backoff_ms": self.backoff_ms,
             "model_calls": self.calls,
         }
 

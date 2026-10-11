@@ -23,7 +23,10 @@ def render(payload: dict) -> str:
         lines.append(f"    received: {_brief(span['input'])}")
         lines.append(f"    produced: {_brief(span['output'])}")
         if span["error"]:
-            lines.append(f"    error: {span['error']}")
+            retry = ""
+            if span.get("will_retry"):
+                retry = f" will_retry=True backoff_ms={span.get('backoff_ms')}"
+            lines.append(f"    error: {span['error']} attempt={span.get('attempt', 1)}{retry}")
     return "\n".join(lines)
 
 
