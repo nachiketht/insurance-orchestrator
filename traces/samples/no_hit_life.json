@@ -1,0 +1,284 @@
+{
+  "case_id": "33affca447904b4aa849698409ebe27a",
+  "cost_usd": 0.0,
+  "spans": [
+    {
+      "step": 1,
+      "agent": "intake",
+      "timestamp": "2026-10-11T20:29:40.714511+00:00",
+      "input": {
+        "applicant_id": "A-999",
+        "applicant_name": "Alan Turing",
+        "date_of_birth": "06/23/1988",
+        "address": "1 Bletchley Park",
+        "product": "life insurance",
+        "coverage_amount": "$500k",
+        "stated_income": "$90,000",
+        "claims_history_text": "none"
+      },
+      "input_source": [
+        "raw_application"
+      ],
+      "output": {
+        "applicant_id": "A-999",
+        "applicant_name": "Alan Turing",
+        "date_of_birth": "1988-06-23",
+        "address": "1 Bletchley Park",
+        "product": "life",
+        "coverage_amount": 500000,
+        "stated_income": 90000,
+        "claims_history_text": "none",
+        "missing_fields": []
+      },
+      "duration_ms": 4111.9,
+      "tokens_used": 268,
+      "cost_usd": 0.0,
+      "status": "ok",
+      "error": null,
+      "model_calls": [
+        {
+          "input_tokens": 172,
+          "output_tokens": 96,
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "enrichment",
+      "timestamp": "2026-10-11T20:29:44.826542+00:00",
+      "input": {
+        "intake": {
+          "applicant_id": "A-999",
+          "applicant_name": "Alan Turing",
+          "date_of_birth": "1988-06-23",
+          "address": "1 Bletchley Park",
+          "product": "life",
+          "coverage_amount": 500000,
+          "stated_income": 90000,
+          "claims_history_text": "none",
+          "missing_fields": []
+        },
+        "bureau": {
+          "credit_band": "no_hit",
+          "prior_claims_count": 0,
+          "asset_age_years": null
+        }
+      },
+      "input_source": [
+        "case.intake",
+        "bureau"
+      ],
+      "output": {
+        "credit_band": "no_hit",
+        "prior_claims_count": 0,
+        "asset_age_years": null,
+        "flags": [
+          "no_bureau_record"
+        ],
+        "notes": "no_bureau_record flag applied due to credit_band being 'no_hit'"
+      },
+      "duration_ms": 2082.3,
+      "tokens_used": 297,
+      "cost_usd": 0.0,
+      "status": "ok",
+      "error": null,
+      "model_calls": [
+        {
+          "input_tokens": 251,
+          "output_tokens": 46,
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "risk_scoring",
+      "timestamp": "2026-10-11T20:29:46.908870+00:00",
+      "input": {
+        "intake": {
+          "applicant_id": "A-999",
+          "applicant_name": "Alan Turing",
+          "date_of_birth": "1988-06-23",
+          "address": "1 Bletchley Park",
+          "product": "life",
+          "coverage_amount": 500000,
+          "stated_income": 90000,
+          "claims_history_text": "none",
+          "missing_fields": []
+        },
+        "enrichment": {
+          "credit_band": "no_hit",
+          "prior_claims_count": 0,
+          "asset_age_years": null,
+          "flags": [
+            "no_bureau_record"
+          ],
+          "notes": "no_bureau_record flag applied due to credit_band being 'no_hit'"
+        }
+      },
+      "input_source": [
+        "case.intake",
+        "case.enrichment"
+      ],
+      "output": {
+        "factors": [
+          {
+            "name": "credit",
+            "points": 0,
+            "detail": "credit_band is 'no_hit'"
+          },
+          {
+            "name": "missing_data",
+            "points": 20,
+            "detail": "credit_band is 'no_hit'"
+          }
+        ],
+        "score": 20,
+        "rationale": "The credit band is 'no_hit', which results in 0 points for the credit factor. However, the missing_data factor is triggered because the credit_band is 'no_hit', adding 20 points. The other factors do not apply due to the data provided."
+      },
+      "duration_ms": 6260.5,
+      "tokens_used": 518,
+      "cost_usd": 0.0,
+      "status": "ok",
+      "error": null,
+      "model_calls": [
+        {
+          "input_tokens": 376,
+          "output_tokens": 142,
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "recommendation",
+      "timestamp": "2026-10-11T20:29:53.169437+00:00",
+      "input": {
+        "intake": {
+          "applicant_id": "A-999",
+          "applicant_name": "Alan Turing",
+          "date_of_birth": "1988-06-23",
+          "address": "1 Bletchley Park",
+          "product": "life",
+          "coverage_amount": 500000,
+          "stated_income": 90000,
+          "claims_history_text": "none",
+          "missing_fields": []
+        },
+        "enrichment": {
+          "credit_band": "no_hit",
+          "prior_claims_count": 0,
+          "asset_age_years": null,
+          "flags": [
+            "no_bureau_record"
+          ],
+          "notes": "no_bureau_record flag applied due to credit_band being 'no_hit'"
+        },
+        "risk": {
+          "factors": [
+            {
+              "name": "credit",
+              "points": 0,
+              "detail": "credit_band is 'no_hit'"
+            },
+            {
+              "name": "missing_data",
+              "points": 20,
+              "detail": "credit_band is 'no_hit'"
+            }
+          ],
+          "score": 20,
+          "rationale": "The credit band is 'no_hit', which results in 0 points for the credit factor. However, the missing_data factor is triggered because the credit_band is 'no_hit', adding 20 points. The other factors do not apply due to the data provided."
+        }
+      },
+      "input_source": [
+        "case.intake",
+        "case.enrichment",
+        "case.risk"
+      ],
+      "output": {
+        "decision": "refer",
+        "reasons": [
+          "The credit_band is 'no_hit', which raises concerns about the applicant's creditworthiness and requires further verification."
+        ],
+        "conditions": [],
+        "source": "agent"
+      },
+      "duration_ms": 2494.0,
+      "tokens_used": 434,
+      "cost_usd": 0.0,
+      "status": "ok",
+      "error": null,
+      "model_calls": [
+        {
+          "input_tokens": 393,
+          "output_tokens": 41,
+          "status": "ok"
+        }
+      ]
+    }
+  ],
+  "final_case": {
+    "case_id": "33affca447904b4aa849698409ebe27a",
+    "raw": {
+      "applicant_id": "A-999",
+      "applicant_name": "Alan Turing",
+      "date_of_birth": "06/23/1988",
+      "address": "1 Bletchley Park",
+      "product": "life insurance",
+      "coverage_amount": "$500k",
+      "stated_income": "$90,000",
+      "claims_history_text": "none"
+    },
+    "intake": {
+      "applicant_id": "A-999",
+      "applicant_name": "Alan Turing",
+      "date_of_birth": "1988-06-23",
+      "address": "1 Bletchley Park",
+      "product": "life",
+      "coverage_amount": 500000,
+      "stated_income": 90000,
+      "claims_history_text": "none",
+      "missing_fields": []
+    },
+    "enrichment": {
+      "credit_band": "no_hit",
+      "prior_claims_count": 0,
+      "asset_age_years": null,
+      "flags": [
+        "no_bureau_record"
+      ],
+      "notes": "no_bureau_record flag applied due to credit_band being 'no_hit'"
+    },
+    "risk": {
+      "factors": [
+        {
+          "name": "credit",
+          "points": 0,
+          "detail": "credit_band is 'no_hit'"
+        },
+        {
+          "name": "missing_data",
+          "points": 20,
+          "detail": "credit_band is 'no_hit'"
+        }
+      ],
+      "score": 20,
+      "rationale": "The credit band is 'no_hit', which results in 0 points for the credit factor. However, the missing_data factor is triggered because the credit_band is 'no_hit', adding 20 points. The other factors do not apply due to the data provided."
+    },
+    "recommendation": {
+      "decision": "refer",
+      "reasons": [
+        "The credit_band is 'no_hit', which raises concerns about the applicant's creditworthiness and requires further verification."
+      ],
+      "conditions": [],
+      "source": "agent"
+    },
+    "status": "completed",
+    "escalation": null
+  },
+  "fixture": "no_hit_life",
+  "total_ms": 14948.7,
+  "tokens_used": 1517
+}

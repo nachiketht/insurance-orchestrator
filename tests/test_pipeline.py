@@ -44,16 +44,30 @@ RISK = {
     "rationale": "Scripted.",
 }
 
+RECOMMENDATION = {
+    "decision": "deny",
+    "reasons": ["The model tried to deny a low score."],
+    "conditions": [],
+    "source": "agent",
+}
+
 
 def test_each_step_receives_the_previous_output() -> None:
-    llm = ScriptedClient({"intake": INTAKE, "enrichment": ENRICHMENT, "risk_scoring": RISK})
+    llm = ScriptedClient(
+        {
+            "intake": INTAKE,
+            "enrichment": ENRICHMENT,
+            "risk_scoring": RISK,
+            "recommendation": RECOMMENDATION,
+        }
+    )
     case = run_case(RAW, llm=llm)
 
-    assert llm.calls == ["intake", "enrichment", "risk_scoring"]
+    assert llm.calls == ["intake", "enrichment", "risk_scoring", "recommendation"]
+    assert case.status == "completed"
     assert case.intake is not None
     assert case.intake.product == "auto"
     assert case.intake.applicant_id == "A-100"
-    assert case.recommendation is None
 
     sent = json.loads(llm.prompts[1][1])
     assert sent["intake"]["product"] == "auto"
@@ -70,3 +84,9 @@ def test_each_step_receives_the_previous_output() -> None:
     assert scored["enrichment"]["prior_claims_count"] == 0
     assert case.risk is not None
     assert case.risk.score == 15
+
+    advised = json.loads(llm.prompts[3][1])
+    assert advised["risk"]["score"] == 15
+    assert advised["enrichment"]["credit_band"] == "a"
+    assert case.recommendation is not None
+    assert case.recommendation.decision == "approve"

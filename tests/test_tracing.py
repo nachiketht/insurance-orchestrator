@@ -45,6 +45,13 @@ RISK = {
     "rationale": "Scripted.",
 }
 
+RECOMMENDATION = {
+    "decision": "approve",
+    "reasons": ["Low score."],
+    "conditions": [],
+    "source": "agent",
+}
+
 REQUIRED = (
     "step",
     "agent",
@@ -59,7 +66,14 @@ REQUIRED = (
 
 
 def test_trace_records_both_steps_and_the_handoff() -> None:
-    llm = ScriptedClient({"intake": INTAKE, "enrichment": ENRICHMENT, "risk_scoring": RISK})
+    llm = ScriptedClient(
+        {
+            "intake": INTAKE,
+            "enrichment": ENRICHMENT,
+            "risk_scoring": RISK,
+            "recommendation": RECOMMENDATION,
+        }
+    )
     tracer = Tracer()
     case = run_case(RAW, llm=llm, tracer=tracer)
     payload = tracer.dump(case.case_id, case.model_dump(mode="json"))
@@ -68,6 +82,7 @@ def test_trace_records_both_steps_and_the_handoff() -> None:
         "intake",
         "enrichment",
         "risk_scoring",
+        "recommendation",
     ]
     for span in payload["spans"]:
         for field in REQUIRED:
@@ -85,6 +100,10 @@ def test_trace_records_both_steps_and_the_handoff() -> None:
     assert risk["input_source"] == ["case.intake", "case.enrichment"]
     assert risk["input"]["enrichment"]["credit_band"] == "a"
     assert risk["output"]["score"] == 15
+    advice = payload["spans"][3]
+    assert advice["input_source"] == ["case.intake", "case.enrichment", "case.risk"]
+    assert advice["input"]["risk"]["score"] == 15
+    assert advice["output"]["decision"] == "approve"
     path = Path("traces") / "handoff-test.json"
     path.parent.mkdir(exist_ok=True)
     path.write_text(json.dumps(payload))
@@ -105,6 +124,7 @@ def test_repair_call_is_a_second_entry_on_the_same_step() -> None:
             "intake": [dict(INTAKE, coverage_amount="250k"), INTAKE],
             "enrichment": ENRICHMENT,
             "risk_scoring": RISK,
+            "recommendation": RECOMMENDATION,
         }
     )
     tracer = Tracer()

@@ -1,0 +1,318 @@
+{
+  "case_id": "a85ff9e0e9754a159d40ac55e767c303",
+  "cost_usd": 0.0,
+  "spans": [
+    {
+      "step": 1,
+      "agent": "intake",
+      "timestamp": "2026-10-11T20:29:21.643873+00:00",
+      "input": {
+        "applicant_id": "A-200",
+        "applicant_name": "Grace Hopper",
+        "date_of_birth": "01/01/1970",
+        "address": "1 Compiler Way",
+        "product": "house insurance",
+        "coverage_amount": "$600k",
+        "stated_income": "$50,000",
+        "claims_history_text": "three water claims in two years"
+      },
+      "input_source": [
+        "raw_application"
+      ],
+      "output": {
+        "applicant_id": "A-200",
+        "applicant_name": "Grace Hopper",
+        "date_of_birth": "1970-01-01",
+        "address": "1 Compiler Way",
+        "product": "home",
+        "coverage_amount": 600000,
+        "stated_income": 50000,
+        "claims_history_text": "three water claims in two years",
+        "missing_fields": []
+      },
+      "duration_ms": 4309.7,
+      "tokens_used": 274,
+      "cost_usd": 0.0,
+      "status": "ok",
+      "error": null,
+      "model_calls": [
+        {
+          "input_tokens": 175,
+          "output_tokens": 99,
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "enrichment",
+      "timestamp": "2026-10-11T20:29:25.953636+00:00",
+      "input": {
+        "intake": {
+          "applicant_id": "A-200",
+          "applicant_name": "Grace Hopper",
+          "date_of_birth": "1970-01-01",
+          "address": "1 Compiler Way",
+          "product": "home",
+          "coverage_amount": 600000,
+          "stated_income": 50000,
+          "claims_history_text": "three water claims in two years",
+          "missing_fields": []
+        },
+        "bureau": {
+          "credit_band": "d",
+          "prior_claims_count": 6,
+          "asset_age_years": 70
+        }
+      },
+      "input_source": [
+        "case.intake",
+        "bureau"
+      ],
+      "output": {
+        "credit_band": "d",
+        "prior_claims_count": 6,
+        "asset_age_years": 70,
+        "flags": [
+          "weak_credit",
+          "high_claims_frequency"
+        ],
+        "notes": "Flags: weak_credit, high_claims_frequency"
+      },
+      "duration_ms": 2116.6,
+      "tokens_used": 299,
+      "cost_usd": 0.0,
+      "status": "ok",
+      "error": null,
+      "model_calls": [
+        {
+          "input_tokens": 255,
+          "output_tokens": 44,
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "risk_scoring",
+      "timestamp": "2026-10-11T20:29:28.070333+00:00",
+      "input": {
+        "intake": {
+          "applicant_id": "A-200",
+          "applicant_name": "Grace Hopper",
+          "date_of_birth": "1970-01-01",
+          "address": "1 Compiler Way",
+          "product": "home",
+          "coverage_amount": 600000,
+          "stated_income": 50000,
+          "claims_history_text": "three water claims in two years",
+          "missing_fields": []
+        },
+        "enrichment": {
+          "credit_band": "d",
+          "prior_claims_count": 6,
+          "asset_age_years": 70,
+          "flags": [
+            "weak_credit",
+            "high_claims_frequency"
+          ],
+          "notes": "Flags: weak_credit, high_claims_frequency"
+        }
+      },
+      "input_source": [
+        "case.intake",
+        "case.enrichment"
+      ],
+      "output": {
+        "factors": [
+          {
+            "name": "prior_claims",
+            "points": 30,
+            "detail": "Prior claims count is 6, which is 3 or more."
+          },
+          {
+            "name": "credit",
+            "points": 25,
+            "detail": "Credit band is 'd'."
+          },
+          {
+            "name": "coverage_income",
+            "points": 20,
+            "detail": "Coverage amount ($600,000) is more than 5 times stated income ($50,000)."
+          },
+          {
+            "name": "asset_age",
+            "points": 15,
+            "detail": "Asset age is 70 years, which is 30 or more."
+          }
+        ],
+        "score": 90,
+        "rationale": "The application has a high number of prior claims, a poor credit band, high coverage relative to income, and an old asset age, all of which contribute to a higher risk score."
+      },
+      "duration_ms": 9816.5,
+      "tokens_used": 606,
+      "cost_usd": 0.0,
+      "status": "ok",
+      "error": null,
+      "model_calls": [
+        {
+          "input_tokens": 378,
+          "output_tokens": 228,
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "recommendation",
+      "timestamp": "2026-10-11T20:29:37.886654+00:00",
+      "input": {
+        "intake": {
+          "applicant_id": "A-200",
+          "applicant_name": "Grace Hopper",
+          "date_of_birth": "1970-01-01",
+          "address": "1 Compiler Way",
+          "product": "home",
+          "coverage_amount": 600000,
+          "stated_income": 50000,
+          "claims_history_text": "three water claims in two years",
+          "missing_fields": []
+        },
+        "enrichment": {
+          "credit_band": "d",
+          "prior_claims_count": 6,
+          "asset_age_years": 70,
+          "flags": [
+            "weak_credit",
+            "high_claims_frequency"
+          ],
+          "notes": "Flags: weak_credit, high_claims_frequency"
+        },
+        "risk": {
+          "factors": [
+            {
+              "name": "prior_claims",
+              "points": 30,
+              "detail": "Prior claims count is 6, which is 3 or more."
+            },
+            {
+              "name": "credit",
+              "points": 25,
+              "detail": "Credit band is 'd'."
+            },
+            {
+              "name": "coverage_income",
+              "points": 20,
+              "detail": "Coverage amount ($600,000) is more than 5 times stated income ($50,000)."
+            },
+            {
+              "name": "asset_age",
+              "points": 15,
+              "detail": "Asset age is 70 years, which is 30 or more."
+            }
+          ],
+          "score": 90,
+          "rationale": "The application has a high number of prior claims, a poor credit band, high coverage relative to income, and an old asset age, all of which contribute to a higher risk score."
+        }
+      },
+      "input_source": [
+        "case.intake",
+        "case.enrichment",
+        "case.risk"
+      ],
+      "output": {
+        "decision": "deny",
+        "reasons": [
+          "The application has a high number of prior claims, a poor credit band, high coverage relative to income, and an old asset age, all of which contribute to a higher risk score."
+        ],
+        "conditions": [],
+        "source": "agent"
+      },
+      "duration_ms": 2826.3,
+      "tokens_used": 522,
+      "cost_usd": 0.0,
+      "status": "ok",
+      "error": null,
+      "model_calls": [
+        {
+          "input_tokens": 467,
+          "output_tokens": 55,
+          "status": "ok"
+        }
+      ]
+    }
+  ],
+  "final_case": {
+    "case_id": "a85ff9e0e9754a159d40ac55e767c303",
+    "raw": {
+      "applicant_id": "A-200",
+      "applicant_name": "Grace Hopper",
+      "date_of_birth": "01/01/1970",
+      "address": "1 Compiler Way",
+      "product": "house insurance",
+      "coverage_amount": "$600k",
+      "stated_income": "$50,000",
+      "claims_history_text": "three water claims in two years"
+    },
+    "intake": {
+      "applicant_id": "A-200",
+      "applicant_name": "Grace Hopper",
+      "date_of_birth": "1970-01-01",
+      "address": "1 Compiler Way",
+      "product": "home",
+      "coverage_amount": 600000,
+      "stated_income": 50000,
+      "claims_history_text": "three water claims in two years",
+      "missing_fields": []
+    },
+    "enrichment": {
+      "credit_band": "d",
+      "prior_claims_count": 6,
+      "asset_age_years": 70,
+      "flags": [
+        "weak_credit",
+        "high_claims_frequency"
+      ],
+      "notes": "Flags: weak_credit, high_claims_frequency"
+    },
+    "risk": {
+      "factors": [
+        {
+          "name": "prior_claims",
+          "points": 30,
+          "detail": "Prior claims count is 6, which is 3 or more."
+        },
+        {
+          "name": "credit",
+          "points": 25,
+          "detail": "Credit band is 'd'."
+        },
+        {
+          "name": "coverage_income",
+          "points": 20,
+          "detail": "Coverage amount ($600,000) is more than 5 times stated income ($50,000)."
+        },
+        {
+          "name": "asset_age",
+          "points": 15,
+          "detail": "Asset age is 70 years, which is 30 or more."
+        }
+      ],
+      "score": 90,
+      "rationale": "The application has a high number of prior claims, a poor credit band, high coverage relative to income, and an old asset age, all of which contribute to a higher risk score."
+    },
+    "recommendation": {
+      "decision": "deny",
+      "reasons": [
+        "The application has a high number of prior claims, a poor credit band, high coverage relative to income, and an old asset age, all of which contribute to a higher risk score."
+      ],
+      "conditions": [],
+      "source": "agent"
+    },
+    "status": "completed",
+    "escalation": null
+  },
+  "fixture": "high_risk_home",
+  "total_ms": 19069.1,
+  "tokens_used": 1701
+}

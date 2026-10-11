@@ -1,0 +1,321 @@
+{
+  "case_id": "647ab26b4f4a42dd8eaca6a5347e0153",
+  "cost_usd": 0.0,
+  "spans": [
+    {
+      "step": 1,
+      "agent": "intake",
+      "timestamp": "2026-10-11T20:29:04.655797+00:00",
+      "input": {
+        "applicant_id": "A-100",
+        "applicant_name": "Ada Lovelace",
+        "date_of_birth": "12/10/1990",
+        "address": "1 Analytical Engine Rd",
+        "product": "car insurance",
+        "coverage_amount": "$250k",
+        "stated_income": "$80,000",
+        "claims_history_text": "none"
+      },
+      "input_source": [
+        "raw_application"
+      ],
+      "output": {
+        "applicant_id": "A-100",
+        "applicant_name": "Ada Lovelace",
+        "date_of_birth": "1990-12-10",
+        "address": "1 Analytical Engine Rd",
+        "product": "auto",
+        "coverage_amount": 250000,
+        "stated_income": 80000,
+        "claims_history_text": "none",
+        "missing_fields": []
+      },
+      "duration_ms": 4146.6,
+      "tokens_used": 270,
+      "cost_usd": 0.0,
+      "status": "ok",
+      "error": null,
+      "model_calls": [
+        {
+          "input_tokens": 173,
+          "output_tokens": 97,
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "agent": "enrichment",
+      "timestamp": "2026-10-11T20:29:08.802472+00:00",
+      "input": {
+        "intake": {
+          "applicant_id": "A-100",
+          "applicant_name": "Ada Lovelace",
+          "date_of_birth": "1990-12-10",
+          "address": "1 Analytical Engine Rd",
+          "product": "auto",
+          "coverage_amount": 250000,
+          "stated_income": 80000,
+          "claims_history_text": "none",
+          "missing_fields": []
+        },
+        "bureau": {
+          "credit_band": "a",
+          "prior_claims_count": 0,
+          "asset_age_years": 6
+        }
+      },
+      "input_source": [
+        "case.intake",
+        "bureau"
+      ],
+      "output": {
+        "credit_band": "a",
+        "prior_claims_count": 0,
+        "asset_age_years": 6,
+        "flags": [],
+        "notes": "No flags triggered."
+      },
+      "duration_ms": 1414.7,
+      "tokens_used": 282,
+      "cost_usd": 0.0,
+      "status": "ok",
+      "error": null,
+      "model_calls": [
+        {
+          "input_tokens": 252,
+          "output_tokens": 30,
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "step": 3,
+      "agent": "risk_scoring",
+      "timestamp": "2026-10-11T20:29:10.217176+00:00",
+      "input": {
+        "intake": {
+          "applicant_id": "A-100",
+          "applicant_name": "Ada Lovelace",
+          "date_of_birth": "1990-12-10",
+          "address": "1 Analytical Engine Rd",
+          "product": "auto",
+          "coverage_amount": 250000,
+          "stated_income": 80000,
+          "claims_history_text": "none",
+          "missing_fields": []
+        },
+        "enrichment": {
+          "credit_band": "a",
+          "prior_claims_count": 0,
+          "asset_age_years": 6,
+          "flags": [],
+          "notes": "No flags triggered."
+        }
+      },
+      "input_source": [
+        "case.intake",
+        "case.enrichment"
+      ],
+      "output": {
+        "factors": [
+          {
+            "name": "prior_claims",
+            "points": 0,
+            "detail": "Prior claims count is 0."
+          },
+          {
+            "name": "credit",
+            "points": 0,
+            "detail": "Credit band is A."
+          },
+          {
+            "name": "coverage_income",
+            "points": 20,
+            "detail": "Coverage amount is more than 5 times stated income."
+          },
+          {
+            "name": "asset_age",
+            "points": 0,
+            "detail": "Asset age is less than 30 years."
+          },
+          {
+            "name": "missing_data",
+            "points": 0,
+            "detail": "No missing fields and credit band is not no_hit."
+          }
+        ],
+        "score": 20,
+        "rationale": "The coverage_income factor is awarded 20 points because the coverage amount is more than 5 times the stated income. All other factors do not meet the criteria for points."
+      },
+      "duration_ms": 9684.6,
+      "tokens_used": 587,
+      "cost_usd": 0.0,
+      "status": "ok",
+      "error": null,
+      "model_calls": [
+        {
+          "input_tokens": 361,
+          "output_tokens": 226,
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "step": 4,
+      "agent": "recommendation",
+      "timestamp": "2026-10-11T20:29:19.901833+00:00",
+      "input": {
+        "intake": {
+          "applicant_id": "A-100",
+          "applicant_name": "Ada Lovelace",
+          "date_of_birth": "1990-12-10",
+          "address": "1 Analytical Engine Rd",
+          "product": "auto",
+          "coverage_amount": 250000,
+          "stated_income": 80000,
+          "claims_history_text": "none",
+          "missing_fields": []
+        },
+        "enrichment": {
+          "credit_band": "a",
+          "prior_claims_count": 0,
+          "asset_age_years": 6,
+          "flags": [],
+          "notes": "No flags triggered."
+        },
+        "risk": {
+          "factors": [
+            {
+              "name": "prior_claims",
+              "points": 0,
+              "detail": "Prior claims count is 0."
+            },
+            {
+              "name": "credit",
+              "points": 0,
+              "detail": "Credit band is A."
+            },
+            {
+              "name": "coverage_income",
+              "points": 20,
+              "detail": "Coverage amount is more than 5 times stated income."
+            },
+            {
+              "name": "asset_age",
+              "points": 0,
+              "detail": "Asset age is less than 30 years."
+            },
+            {
+              "name": "missing_data",
+              "points": 0,
+              "detail": "No missing fields and credit band is not no_hit."
+            }
+          ],
+          "score": 20,
+          "rationale": "The coverage_income factor is awarded 20 points because the coverage amount is more than 5 times the stated income. All other factors do not meet the criteria for points."
+        }
+      },
+      "input_source": [
+        "case.intake",
+        "case.enrichment",
+        "case.risk"
+      ],
+      "output": {
+        "decision": "approve",
+        "reasons": [
+          "The coverage amount is more than 5 times the stated income, which is a strong indicator of adequate coverage."
+        ],
+        "conditions": [],
+        "source": "agent"
+      },
+      "duration_ms": 1734.8,
+      "tokens_used": 483,
+      "cost_usd": 0.0,
+      "status": "ok",
+      "error": null,
+      "model_calls": [
+        {
+          "input_tokens": 443,
+          "output_tokens": 40,
+          "status": "ok"
+        }
+      ]
+    }
+  ],
+  "final_case": {
+    "case_id": "647ab26b4f4a42dd8eaca6a5347e0153",
+    "raw": {
+      "applicant_id": "A-100",
+      "applicant_name": "Ada Lovelace",
+      "date_of_birth": "12/10/1990",
+      "address": "1 Analytical Engine Rd",
+      "product": "car insurance",
+      "coverage_amount": "$250k",
+      "stated_income": "$80,000",
+      "claims_history_text": "none"
+    },
+    "intake": {
+      "applicant_id": "A-100",
+      "applicant_name": "Ada Lovelace",
+      "date_of_birth": "1990-12-10",
+      "address": "1 Analytical Engine Rd",
+      "product": "auto",
+      "coverage_amount": 250000,
+      "stated_income": 80000,
+      "claims_history_text": "none",
+      "missing_fields": []
+    },
+    "enrichment": {
+      "credit_band": "a",
+      "prior_claims_count": 0,
+      "asset_age_years": 6,
+      "flags": [],
+      "notes": "No flags triggered."
+    },
+    "risk": {
+      "factors": [
+        {
+          "name": "prior_claims",
+          "points": 0,
+          "detail": "Prior claims count is 0."
+        },
+        {
+          "name": "credit",
+          "points": 0,
+          "detail": "Credit band is A."
+        },
+        {
+          "name": "coverage_income",
+          "points": 20,
+          "detail": "Coverage amount is more than 5 times stated income."
+        },
+        {
+          "name": "asset_age",
+          "points": 0,
+          "detail": "Asset age is less than 30 years."
+        },
+        {
+          "name": "missing_data",
+          "points": 0,
+          "detail": "No missing fields and credit band is not no_hit."
+        }
+      ],
+      "score": 20,
+      "rationale": "The coverage_income factor is awarded 20 points because the coverage amount is more than 5 times the stated income. All other factors do not meet the criteria for points."
+    },
+    "recommendation": {
+      "decision": "approve",
+      "reasons": [
+        "The coverage amount is more than 5 times the stated income, which is a strong indicator of adequate coverage."
+      ],
+      "conditions": [],
+      "source": "agent"
+    },
+    "status": "completed",
+    "escalation": null
+  },
+  "fixture": "clean_auto",
+  "total_ms": 16980.7,
+  "tokens_used": 1622
+}

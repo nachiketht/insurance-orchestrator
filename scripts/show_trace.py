@@ -6,9 +6,12 @@ from pathlib import Path
 
 
 def render(payload: dict) -> str:
+    final = payload.get("final_case") or {}
+    recommendation = final.get("recommendation") or {}
+    decision = recommendation.get("decision", "-")
     lines = [
-        f"case={payload['case_id']}  spans={len(payload['spans'])}  "
-        f"cost_usd={payload['cost_usd']:.2f}",
+        f"fixture={payload.get('fixture', '-')}  decision={decision}  "
+        f"spans={len(payload['spans'])}  cost_usd={payload['cost_usd']:.2f}",
     ]
     for span in payload["spans"]:
         lines.append(
@@ -50,6 +53,8 @@ def _brief(value: dict | None) -> str:
         claims = value["enrichment"].get("prior_claims_count")
         parts.append(f"enrichment.credit_band={band}")
         parts.append(f"enrichment.prior_claims_count={claims}")
+    if "risk" in value:
+        parts.append(f"risk.score={value['risk'].get('score')}")
     return ", ".join(parts) if parts else ", ".join(list(value)[:4])
 
 

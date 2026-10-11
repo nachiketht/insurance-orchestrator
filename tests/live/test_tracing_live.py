@@ -42,6 +42,7 @@ def test_live_trace_has_tokens_for_both_steps(tmp_path: Path) -> None:
         "intake",
         "enrichment",
         "risk_scoring",
+        "recommendation",
     ]
     for span in payload["spans"]:
         assert span["tokens_used"] > 0
@@ -51,3 +52,5 @@ def test_live_trace_has_tokens_for_both_steps(tmp_path: Path) -> None:
     assert payload["spans"][1]["input"]["intake"]["product"] == "auto"
     assert payload["spans"][2]["input"]["enrichment"]["credit_band"] == "a"
     assert payload["spans"][2]["output"]["score"] == case.risk.score
+    assert payload["spans"][3]["input"]["risk"]["score"] == case.risk.score
+    assert payload["spans"][3]["output"]["decision"] == case.recommendation.decision

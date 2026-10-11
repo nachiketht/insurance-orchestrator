@@ -5,6 +5,7 @@ from typing import Iterator
 
 from underwriting.agents.enrichment import enrichment_agent
 from underwriting.agents.intake import intake_agent
+from underwriting.agents.recommendation import recommendation_agent
 from underwriting.agents.risk import risk_scoring_agent
 from underwriting.bureau import lookup
 from underwriting.llm import LLMClient
@@ -43,7 +44,7 @@ def run_case(
     llm: LLMClient,
     tracer: Tracer | None = None,
 ) -> CaseRecord:
-    """Intake, enrichment, then risk scoring. Recommendation is added after this handoff."""
+    """Run all four agents. Only this function writes the case record."""
     case = CaseRecord.new(raw)
     client = TracedLLM(llm, tracer) if tracer is not None else llm
     bureau = lookup(raw.applicant_id)
@@ -65,4 +66,25 @@ def run_case(
         case.risk = risk_scoring_agent(case.intake, case.enrichment, llm=client)
         span.output = case.risk.model_dump(mode="json")
 
+    received = {
+        "intake": case.intake.model_dump(mode="json"),
+        "enrichment": case.enrichment.model_dump(mode="json"),
+        "risk": case.risk.model_dump(mode="json"),
+    }
+    with _open(
+        tracer,
+        4,
+        "recommendation",
+        ["case.intake", "case.enrichment", "case.risk"],
+        received,
+    ) as span:
+        case.recommendation = recommendation_agent(
+            case.intake,
+            case.enrichment,
+            case.risk,
+            llm=client,
+        )
+        span.output = case.recommendation.model_dump(mode="json")
+
+    case.status = "completed"
     return case
